@@ -1,5 +1,3 @@
-import pytest
-
 from ctmds1.random_prices import randu_prices
 
 
