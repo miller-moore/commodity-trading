@@ -1,5 +1,5 @@
 [project]
-name = "ctmds1"
+name = "ctmds"
 version = "0.1.0"
 description = ""
 authors = [
@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "numpy (>=2.2.2,<3.0.0)",
-    "click (>=8.1.8,<9.0.0)"
+    "typer (>=0.15.1,<0.16.0)",
 ]
 
 
@@ -17,8 +17,85 @@ dependencies = [
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
+matplotlib = "^3.10.0"
+
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+
+[tool.ruff.lint]
+select = [
+    "C4",
+    "E",
+    "F",
+    "W",
+    "C90",
+    "D",
+    # "DTZ",
+    "UP",
+    "S",
+    "T10",
+    "ICN",
+    "PIE",
+    # "PT",
+    "PYI",
+    "Q",
+    "I",
+    "RSE",
+    "TID",
+    # "SIM",
+    # "ARG",
+    # "ERA",
+    "PD",
+    # "PGH",
+    # "PLW",
+    "NPY",
+    "RUF",
+]
+ignore = [
+    "D100",  # Missing docstring in public module  **fix**
+    "D101",
+    "D102",  # Missing docstring in public method  **fix**
+    "D103",  # Missing docstring in public function  **fix**
+    "D104",  # Missing docstring in public package  **fix**
+    "D107",
+    "D105",
+    "D200",  # One-line docstring should fit on one line with quotes (optional style)
+    "D203",  # 1 blank line required before class docstring (optional style)
+    "D205",  # 1 blank line required between summary line and description (optional style)
+    "D212",  # Multi-line docstring summary should start at the first line (optional style)
+    "D400",  # First line should end with a period (not always a first line)
+    "D413",  # Missing blank line after last section ('Parameters')
+    "D415",  # First line should end with a period, question mark, or exclamation point (not always a first line)
+    "D416",  # Section name should end with a colon ('Warnings:', not 'Warnings') (incorrect?)
+    "E741",  # Ambiguous variable name (single char)
+    "PD901", # `df` is a bad variable name. Be kinder to your future self
+    "RUF012",  # Mutable class attributes should be annotated with `typing.ClassVar`
+    "S101",  # Use of assert detected (OK in test suite)
+    "S105",  # Use of hardcoded password (spurious)
+    "S106",  # Use of hardcoded password (spurious)
+    "S113",  # Probable use of requests call without timeout **fix**
+    "S603",  # `subprocess` call: check for execution of untrusted input **fix**
+    "SIM105",  # Use `contextlib.suppress(UnicodeDecodeError)` instead of `try`-`except`-`pass`
+]
+# Allow autofix for all enabled rules (when `--fix`) is provided
+fixable = ["ALL"]
+extend-select = ["I"]  # Enable import sorting
+unfixable = []
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+
+[tool.ruff.lint.isort]
+force-single-line = true
+# force-sort-within-sections = false
+single-line-exclusions = ["typing"]
+lines-after-imports = 2
 
 
 [tool.pytest.ini_options]
