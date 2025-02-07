@@ -28,7 +28,7 @@ Replace `<num>` with the number of random prices you want to generate.
 To generate random normal prices for a given date and country, run the following command:
 
 ```sh
-poetry run python -m ctmds.cli generate-date-country-prices <for_date> <country_code>
+poetry run python -m ctmds.cli generate-country-datetime-prices <for_date> <country_code>
 ```
 
 ### Example
