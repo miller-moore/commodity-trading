@@ -1,6 +1,6 @@
 # ctmds
 
-The workings up to professional grade commodity trading software tools.
+Commodity trading market data simulator.
 
 ## Installation
 
