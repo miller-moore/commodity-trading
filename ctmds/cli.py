@@ -3,6 +3,7 @@ import time
 
 import typer
 
+from ctmds.country_datetime_series import get_country_datetime_series
 from ctmds.random_prices import rand_normal_prices
 from ctmds.random_prices import rand_uniform_prices
 
@@ -27,7 +28,7 @@ def generate_randu_prices(num: int):
 
 
 @app.command()
-def generate_date_country_prices(
+def generate_country_datetime_prices(
     for_date: str,
     country_code: str,
     granularity: str = "hourly",
@@ -52,19 +53,16 @@ def generate_date_country_prices(
         raise ValueError(f"Unsupported granularity, must be in {['hourly', 'half-hourly']}")
 
     base_price = BASE_PRICES[country_code]
-    num_intervals = 24 if granularity == "hourly" else 48
-    interval_minutes = 60 if granularity == "hourly" else 30
+    timeseries = get_country_datetime_series(for_date, country_code, granularity)
+    num = len(timeseries)
 
     start = time.time()
-    prices = rand_normal_prices(base_price, scale=1, num=num_intervals, decimals=2)
+    prices = rand_normal_prices(base_price, scale=1, num=num, decimals=2)
     end = time.time()
-    print(f"Runtime of {num_intervals} `rand_normal_prices`: {(end - start):.2f} seconds")
+    print(f"Runtime of {num} `rand_normal_prices`: {(end - start):.2f} seconds")
 
-    start_time = datetime.datetime.strptime(for_date, "%Y-%m-%d")
-    for i in range(num_intervals):
-        time_label = (start_time + datetime.timedelta(minutes=i * interval_minutes)).strftime(
-            "%Y-%m-%d %H:%M"
-        )
+    for i, ts in enumerate(timeseries):
+        time_label = ts.strftime("%Y-%m-%d %H:%M")
         print(f"{time_label}: {prices[i]:,.2f}")
 
 
