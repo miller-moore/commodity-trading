@@ -31,6 +31,12 @@ To generate random normal prices for a given date and country, run the following
 poetry run python -m ctmds.cli generate-country-datetime-prices <for_date> <country_code>
 ```
 
+To generate random prices for a given date, country, and commodity (natgas, power, or crude), run the following command:
+
+```sh
+poetry run python -m ctmds.cli generate-commodity-datetime-prices <for_date> <country_code> <commodity>
+```
+
 ### Example
 
 ```sh
