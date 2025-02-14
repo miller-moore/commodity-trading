@@ -3,7 +3,6 @@ import time
 import typer
 
 from ctmds.commodity_price_generator import CommodityPriceGenerator
-from ctmds.commodity_price_generator import get_commodity_price_series
 from ctmds.country_datetime_series import get_country_datetime_series
 from ctmds.enums import Commodity
 from ctmds.enums import CountryCode
