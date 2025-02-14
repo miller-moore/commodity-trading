@@ -2,8 +2,12 @@ import time
 
 import typer
 
-from ctmds.commodity_price_series import get_commodity_price_series
+from ctmds.commodity_price_generator import CommodityPriceGenerator
+from ctmds.commodity_price_generator import get_commodity_price_series
 from ctmds.country_datetime_series import get_country_datetime_series
+from ctmds.enums import Commodity
+from ctmds.enums import CountryCode
+from ctmds.enums import Granularity
 from ctmds.random_prices import rand_normal_prices
 from ctmds.random_prices import rand_uniform_prices
 
@@ -30,8 +34,8 @@ def generate_randu_prices(num: int):
 @app.command()
 def generate_country_datetime_prices(
     for_date: str,
-    country_code: str,
-    granularity: str = "hourly",
+    country_code: CountryCode,
+    granularity: Granularity = Granularity.HOURLY,
 ):
     """
     Generate and print prices drawn from a random normal distribution for a given date and country
@@ -39,18 +43,12 @@ def generate_country_datetime_prices(
 
     for_date : str
         The date for which to generate prices
-    country_code : str
-        Country code from the accepted list of options, must be in ["GB", "FR", "NL", "DE"]
-    granularity : str
-        Granularity of time at which to generate prices, must be in ["hourly", "half-hourly"]
+    country_code : CountryCode
+        Country code
+    granularity : Granularity
+        Granularity of time
     """
     BASE_PRICES = {"GB": 61, "FR": 58, "NL": 52, "DE": 57}
-
-    if country_code not in BASE_PRICES:
-        raise ValueError(f"Unsupported country code, must be in {list(BASE_PRICES)}")
-
-    if granularity not in ["hourly", "half-hourly"]:
-        raise ValueError(f"Unsupported granularity, must be in {['hourly', 'half-hourly']}")
 
     base_price = BASE_PRICES[country_code]
     timeseries = get_country_datetime_series(for_date, country_code, granularity)
@@ -69,9 +67,9 @@ def generate_country_datetime_prices(
 @app.command()
 def generate_commodity_datetime_prices(
     for_date: str,
-    country_code: str,
-    commodity: str,
-    granularity: str = "hourly",
+    country_code: CountryCode,
+    commodity: Commodity,
+    granularity: Granularity = Granularity.HOURLY,
 ):
     """
     Generate synthetic price series for power, natural gas, and crude oil.
@@ -80,33 +78,24 @@ def generate_commodity_datetime_prices(
     ----------
     for_date : str
         Date in 'YYYY-MM-DD' format.
-    country_code : str
-        One of ['GB', 'FR', 'NL', 'DE'] representing the country code.
-    commodity : str
-        One of ['natgas','power','crude'] representing the commodity type.
-    granularity : str, optional
-        Frequency of data points, one of ['hourly', 'half-hourly']. Default is 'hourly'.
+    country_code : CountryCode
+        Country code
+    commodity : Commodity
+        Commodity type
+    granularity : Granularity, optional
+        Granularity of time. Default is 'hourly'.
     """
-    COUNTRY_CODES = ["GB", "FR", "NL", "DE"]
-
-    if country_code not in COUNTRY_CODES:
-        raise ValueError(f"Unsupported country code, must be in {COUNTRY_CODES}")
-
-    COMMODITIES = ["natgas", "power", "crude"]
-    if commodity not in COMMODITIES:
-        raise ValueError(f"Unsupported commodity, must be in {COMMODITIES}")
-
-    if granularity not in ["hourly", "half-hourly"]:
-        raise ValueError(f"Unsupported granularity, must be in {['hourly', 'half-hourly']}")
-
     start = time.time()
-    df_prices = get_commodity_price_series(for_date, country_code, granularity)
+    comm_price_generator = CommodityPriceGenerator(commodity)
+    price_series = comm_price_generator.generate_price_series(for_date, country_code, granularity)
     end = time.time()
-    print(f"Runtime of `get_commodity_price_series`: {(end - start):.2f} seconds")
+    print(
+        f"Runtime of `CommodityPriceGenerator.generate_price_series`: {(end - start):.2f} seconds"
+    )
 
-    for ts, row in df_prices.iterrows():
+    for ts, value in price_series.items():
         time_label = ts.strftime("%Y-%m-%d %H:%M")
-        print(f"{time_label}: {row[commodity].round(2)}")
+        print(f"{time_label}: {round(value, 2)}")
 
 
 if __name__ == "__main__":
