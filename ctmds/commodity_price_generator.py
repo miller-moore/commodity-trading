@@ -40,17 +40,14 @@ class CommodityPriceGenerator:
         """
         dates = get_country_datetime_series(for_date, country_code, granularity)
 
-        match self.commodity:
-            case Commodity.CRUDE:
-                prices = generate_crude_prices(dates, country_code, seed)
-            case Commodity.NATGAS:
-                prices = generate_natgas_prices(dates, country_code, seed)
-            case Commodity.POWER:
-                prices = generate_power_prices(dates, country_code, seed)
-            case _:
-                raise NotImplementedError(
-                    f"price generation is not implemented for {self.commodity}"
-                )
+        PRICE_FUNCTIONS = {
+            Commodity.CRUDE: generate_crude_prices,
+            Commodity.NATGAS: generate_natgas_prices,
+            Commodity.POWER: generate_power_prices,
+        }
+
+        prices = PRICE_FUNCTIONS[self.commodity](dates, country_code, seed)
+
         return pd.Series(prices, index=dates)
 
 
