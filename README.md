@@ -25,10 +25,16 @@ poetry run python -m ctmds.cli generate-randu-prices <num>
 Replace `<num>` with the number of random prices you want to generate.
 
 
-To generate random normal prices for a given date and country, run the following command:
+To generate random normal prices for a given date and country (GB, FR, NL, or DE), run the following command:
 
 ```sh
 poetry run python -m ctmds.cli generate-country-datetime-prices <for_date> <country_code>
+```
+
+To generate random prices for a given date, country, and commodity (NATGAS, POWER, or CRUDE), run the following command:
+
+```sh
+poetry run python -m ctmds.cli generate-commodity-datetime-prices <for_date> <country_code> <commodity>
 ```
 
 ### Example

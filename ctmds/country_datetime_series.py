@@ -4,17 +4,12 @@ from datetime import timedelta
 import pandas as pd
 import pytz
 
-
-COUNTRY_ISO_TO_TIMEZONE = {
-    "GB": "Europe/London",
-    "FR": "Europe/Paris",
-    "NL": "Europe/Amsterdam",
-    "DE": "Europe/Berlin",
-}
+from ctmds.enums import CountryCode
+from ctmds.enums import Granularity
 
 
 def get_country_datetime_series(
-    date_str: str, country_code: str, granularity: str = "hourly"
+    date_str: str, country_code: CountryCode, granularity: Granularity = Granularity.HOURLY
 ) -> pd.DatetimeIndex:
     """
     Get the point-in-time accurate timestamps for a given date and country ISO code,
@@ -24,17 +19,18 @@ def get_country_datetime_series(
     On spring forward dates, this will result in fewer timestamps than in a normal 24 hour period.
     On fall back dates, this will result in more timestamps than in a normal 24 hour period.
     """
-    if country_code not in COUNTRY_ISO_TO_TIMEZONE:
-        raise ValueError("Unsupported country ISO code.")
+    country_code = CountryCode[country_code]
+    granularity = Granularity[granularity]
 
-    tz = pytz.timezone(COUNTRY_ISO_TO_TIMEZONE[country_code])
+    tz = pytz.timezone(country_code.to_timezone_str())
 
     # Convert input date to a datetime object at midnight
     dt = datetime.strptime(date_str, "%Y-%m-%d").replace(hour=0, minute=0)
 
     # Get the timezone naive time series
-    freq = "h" if granularity == "hourly" else "30min"
-    naive_range = pd.date_range(start=dt, end=dt + timedelta(days=1, seconds=-1), freq=freq)
+    naive_range = pd.date_range(
+        start=dt, end=dt + timedelta(days=1, seconds=-1), freq=granularity.to_pandas_freq()
+    )
 
     ## Auto-detect DST transition:
     # Localize in "strict" mode to avoid automatic DST correction
